@@ -2,6 +2,7 @@ package com.example.popularmovies;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,7 +18,9 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.example.popularmovies.businessobjects.MovieConstants;
 import com.example.popularmovies.businessobjects.MovieInfo;
 import com.squareup.picasso.Picasso;
 
@@ -43,7 +46,7 @@ import java.util.List;
  * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
  * interface.
  */
-public class MoviesGridFragment extends Fragment implements AbsListView.OnItemClickListener {
+public class MoviesGridFragment extends Fragment implements AbsListView.OnItemClickListener, MovieConstants {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -110,7 +113,15 @@ public class MoviesGridFragment extends Fragment implements AbsListView.OnItemCl
         GridView gridView = (GridView) view.findViewById(android.R.id.list);
         gridView.setAdapter(movieInfoAdapter);
         gridView.setClickable(true);
-
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                MovieInfo movieInfo = movieInfoAdapter.getItem(position);
+                Intent detailIntent = new Intent(getActivity(), MovieDetailActivity.class);
+                detailIntent.putExtra(EXTRAS_FORECAST, movieInfo);
+                startActivity(detailIntent);
+            }
+        });
         return view;
     }
 
@@ -195,6 +206,7 @@ public class MoviesGridFragment extends Fragment implements AbsListView.OnItemCl
             }
             // Lookup view for data population
             ImageView moviePosterImageView = (ImageView) convertView.findViewById(R.id.movie_poster);
+            TextView movieTitleView = (TextView) convertView.findViewById(R.id.movie_title);
             // Populate the data into the template view using the data object
             http://image.tmdb.org/t/p/w500/8uO0gUM8aNqYLs1OsTBQiXu0fEv.jpg?api_key=1ecc7763c72271156bf6004d6edc2e1d&language=en&include_image_language=en,null
 
@@ -204,6 +216,7 @@ public class MoviesGridFragment extends Fragment implements AbsListView.OnItemCl
                     +"?api_key="
                     +BuildConfig.THE_MOVIE_DB_API_KEY
                     +"&language=en&include_image_language=en,null").into(moviePosterImageView);
+            movieTitleView.setText(movieInfo.getTitle());
             // Return the completed view to render on screen
             return convertView;
         }

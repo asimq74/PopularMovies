@@ -1,11 +1,14 @@
 package com.example.popularmovies.businessobjects;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.List;
 
 /**
  * Created by asimqureshi on 6/5/16.
  */
-public class MovieInfo {
+public class MovieInfo implements Parcelable {
     private String posterPath;
     private String adult;
     private String overview;
@@ -20,6 +23,58 @@ public class MovieInfo {
     private String voteCount;
     private String video;
     private String voteAverage;
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeInt(id);
+        dest.writeString(posterPath);
+        dest.writeList(genreIds);
+        dest.writeString(adult);
+        dest.writeString(overview);
+        dest.writeString(releaseDate);
+        dest.writeString(originalTitle);
+        dest.writeString(originalLanguage);
+        dest.writeString(title);
+        dest.writeString(backdropPath);
+        dest.writeString(popularity);
+        dest.writeString(voteCount);
+        dest.writeString(video);
+        dest.writeString(voteAverage);
+    }
+
+    public MovieInfo(Parcel in) {
+        this.posterPath = in.readString();
+//        this.adult;
+//        this.overview;
+//        this.releaseDate;
+//        this.genreIds = in.readList()
+//        this.id;
+//        this.originalTitle;
+//        this.originalLanguage;
+//        this.title;
+//        this.backdropPath;
+//        this.popularity;
+//        this.voteCount;
+//        this.video;
+//        this.voteAverage;
+    }
+
+    public static final Parcelable.Creator<MovieInfo> CREATOR = new Parcelable.Creator<MovieInfo>() {
+
+        public MovieInfo createFromParcel(Parcel in) {
+//            in.rea
+            return new MovieInfo(in);
+        }
+
+        public MovieInfo[] newArray(int size) {
+            return new MovieInfo[size];
+        }
+    };
 
     public String getPosterPath() {
         return posterPath;
