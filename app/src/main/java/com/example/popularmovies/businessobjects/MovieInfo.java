@@ -3,26 +3,54 @@ package com.example.popularmovies.businessobjects;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Created by asimqureshi on 6/5/16.
  */
 public class MovieInfo implements Parcelable {
-    private String posterPath;
-    private String adult;
-    private String overview;
-    private String releaseDate;
-    private List<Integer> genreIds;
-    private int id;
-    private String originalTitle;
-    private String originalLanguage;
-    private String title;
-    private String backdropPath;
-    private String popularity;
-    private String voteCount;
-    private String video;
-    private String voteAverage;
+    private String posterPath = "";
+    private String adult = "";
+    private String overview = "";
+    private String releaseDate = "";
+    private List<Integer> genreIds = new ArrayList<>();
+    private int id = 0;
+    private String originalTitle = "";
+    private String originalLanguage = "";
+    private String title = "";
+    private String backdropPath = "";
+    private String popularity = "";
+    private String voteCount = "";
+    private String video = "";
+    private String voteAverage = "";
+
+    public static final Parcelable.Creator<MovieInfo> CREATOR = new Parcelable.Creator<MovieInfo>() {
+
+        public MovieInfo createFromParcel(Parcel in) {
+            MovieInfo movieInfo = new MovieInfo();
+            movieInfo.posterPath = in.readString();
+            movieInfo.adult = in.readString();
+            movieInfo.overview = in.readString();
+            movieInfo.releaseDate = in.readString();
+//            in.readList(movieInfo.genreIds, Integer.class.getClassLoader());
+            movieInfo.genreIds = in.readArrayList(Integer.class.getClassLoader());
+            movieInfo.id = in.readInt();
+            movieInfo.originalTitle = in.readString();
+            movieInfo.originalLanguage = in.readString();
+            movieInfo.title = in.readString();
+            movieInfo.backdropPath = in.readString();
+            movieInfo.popularity = in.readString();
+            movieInfo.voteCount = in.readString();
+            movieInfo.video = in.readString();
+            movieInfo.voteAverage = in.readString();
+            return movieInfo;
+        }
+
+        public MovieInfo[] newArray(int size) {
+            return new MovieInfo[size];
+        }
+    };
 
     @Override
     public int describeContents() {
@@ -31,12 +59,12 @@ public class MovieInfo implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(id);
         dest.writeString(posterPath);
-        dest.writeList(genreIds);
         dest.writeString(adult);
         dest.writeString(overview);
         dest.writeString(releaseDate);
+        dest.writeList(genreIds);
+        dest.writeInt(id);
         dest.writeString(originalTitle);
         dest.writeString(originalLanguage);
         dest.writeString(title);
@@ -47,34 +75,6 @@ public class MovieInfo implements Parcelable {
         dest.writeString(voteAverage);
     }
 
-    public MovieInfo(Parcel in) {
-        this.posterPath = in.readString();
-//        this.adult;
-//        this.overview;
-//        this.releaseDate;
-//        this.genreIds = in.readList()
-//        this.id;
-//        this.originalTitle;
-//        this.originalLanguage;
-//        this.title;
-//        this.backdropPath;
-//        this.popularity;
-//        this.voteCount;
-//        this.video;
-//        this.voteAverage;
-    }
-
-    public static final Parcelable.Creator<MovieInfo> CREATOR = new Parcelable.Creator<MovieInfo>() {
-
-        public MovieInfo createFromParcel(Parcel in) {
-//            in.rea
-            return new MovieInfo(in);
-        }
-
-        public MovieInfo[] newArray(int size) {
-            return new MovieInfo[size];
-        }
-    };
 
     public String getPosterPath() {
         return posterPath;
@@ -190,20 +190,20 @@ public class MovieInfo implements Parcelable {
 
     @Override
     public String toString() {
-        return "\nMovieInfo{" +"\n" +
-                "posterPath='" + posterPath + '\'' +",\n" +
-                "adult='" + adult + '\'' +",\n" +
-                "overview='" + overview + '\'' +",\n" +
-                "releaseDate='" + releaseDate + '\'' +",\n" +
-                "genreIds=" + genreIds +",\n" +
-                "id=" + id +",\n" +
-                "originalTitle='" + originalTitle + '\'' +",\n" +
-                "originalLanguage='" + originalLanguage + '\'' +",\n" +
-                "title='" + title + '\'' +",\n" +
-                "backdropPath='" + backdropPath + '\'' +",\n" +
-                "popularity='" + popularity + '\'' +",\n" +
-                "voteCount='" + voteCount + '\'' +",\n" +
-                "video='" + video + '\'' +",\n" +
+        return "\nMovieInfo{" + "\n" +
+                "posterPath='" + posterPath + '\'' + ",\n" +
+                "adult='" + adult + '\'' + ",\n" +
+                "overview='" + overview + '\'' + ",\n" +
+                "releaseDate='" + releaseDate + '\'' + ",\n" +
+                "genreIds=" + genreIds + ",\n" +
+                "id=" + id + ",\n" +
+                "originalTitle='" + originalTitle + '\'' + ",\n" +
+                "originalLanguage='" + originalLanguage + '\'' + ",\n" +
+                "title='" + title + '\'' + ",\n" +
+                "backdropPath='" + backdropPath + '\'' + ",\n" +
+                "popularity='" + popularity + '\'' + ",\n" +
+                "voteCount='" + voteCount + '\'' + ",\n" +
+                "video='" + video + '\'' + ",\n" +
                 "voteAverage='" + voteAverage + '\'' +
                 '}';
     }

@@ -18,7 +18,6 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.ListAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.popularmovies.businessobjects.MovieConstants;
 import com.example.popularmovies.businessobjects.MovieInfo;
@@ -39,10 +38,10 @@ import java.util.List;
 
 /**
  * A fragment representing a list of Items.
- * <p/>
+ * <p>
  * Large screen devices (such as tablets) are supported by replacing the ListView
  * with a GridView.
- * <p/>
+ * <p>
  * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
  * interface.
  */
@@ -117,9 +116,11 @@ public class MoviesGridFragment extends Fragment implements AbsListView.OnItemCl
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 MovieInfo movieInfo = movieInfoAdapter.getItem(position);
-                Intent detailIntent = new Intent(getActivity(), MovieDetailActivity.class);
-                detailIntent.putExtra(EXTRAS_FORECAST, movieInfo);
-                startActivity(detailIntent);
+                Intent movieDetailIntent = new Intent(getActivity(), MovieDetailActivity.class);
+                Bundle mBundle = new Bundle();
+                mBundle.putParcelable(MOVIE_INFO_PARCELABLE_KEY, movieInfo);
+                movieDetailIntent.putExtras(mBundle);
+                startActivity(movieDetailIntent);
             }
         });
         return view;
@@ -180,7 +181,7 @@ public class MoviesGridFragment extends Fragment implements AbsListView.OnItemCl
      * fragment to allow an interaction in this fragment to be communicated
      * to the activity and potentially other fragments contained in that
      * activity.
-     * <p/>
+     * <p>
      * See the Android Training lesson <a href=
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
@@ -199,7 +200,7 @@ public class MoviesGridFragment extends Fragment implements AbsListView.OnItemCl
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             // Get the data item for this position
-            MovieInfo movieInfo = getItem(position);
+            final MovieInfo movieInfo = getItem(position);
             // Check if an existing view is being reused, otherwise inflate the view
             if (convertView == null) {
                 convertView = LayoutInflater.from(getContext()).inflate(R.layout.movie_poster_item, parent, false);
@@ -208,16 +209,16 @@ public class MoviesGridFragment extends Fragment implements AbsListView.OnItemCl
             ImageView moviePosterImageView = (ImageView) convertView.findViewById(R.id.movie_poster);
             TextView movieTitleView = (TextView) convertView.findViewById(R.id.movie_title);
             // Populate the data into the template view using the data object
-            http://image.tmdb.org/t/p/w500/8uO0gUM8aNqYLs1OsTBQiXu0fEv.jpg?api_key=1ecc7763c72271156bf6004d6edc2e1d&language=en&include_image_language=en,null
+            http:
+//image.tmdb.org/t/p/w500/8uO0gUM8aNqYLs1OsTBQiXu0fEv.jpg?api_key=1ecc7763c72271156bf6004d6edc2e1d&language=en&include_image_language=en,null
 
 
             Picasso.with(getActivity()).load("http://image.tmdb.org/t/p/w500/"
-                    +movieInfo.getPosterPath()
-                    +"?api_key="
-                    +BuildConfig.THE_MOVIE_DB_API_KEY
-                    +"&language=en&include_image_language=en,null").into(moviePosterImageView);
+                    + movieInfo.getPosterPath()
+                    + "?api_key="
+                    + BuildConfig.THE_MOVIE_DB_API_KEY
+                    + "&language=en&include_image_language=en,null").into(moviePosterImageView);
             movieTitleView.setText(movieInfo.getTitle());
-            // Return the completed view to render on screen
             return convertView;
         }
     }
@@ -276,9 +277,19 @@ public class MoviesGridFragment extends Fragment implements AbsListView.OnItemCl
                 movieInfo.setVoteCount(movieInfoJsonObject.getString(VOTE_COUNT));
                 movieInfo.setVideo(movieInfoJsonObject.getString(VIDEO));
                 movieInfo.setVoteAverage(movieInfoJsonObject.getString(VOTE_AVERAGE));
+                populateGenreIds(GENRE_IDS, movieInfoJsonObject, movieInfo);
                 movies.add(movieInfo);
             }
             return movies;
+        }
+
+        protected void populateGenreIds(String GENRE_IDS, JSONObject movieInfoJsonObject, MovieInfo movieInfo) throws JSONException {
+            JSONArray jsonArray = movieInfoJsonObject.getJSONArray(GENRE_IDS);
+            if (jsonArray != null) {
+                for (int j = 0; j < jsonArray.length(); j++) {
+                    movieInfo.getGenreIds().add(new Integer(jsonArray.get(j).toString()));
+                }
+            }
         }
 
         @Override
