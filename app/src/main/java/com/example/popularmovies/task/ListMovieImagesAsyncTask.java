@@ -1,10 +1,18 @@
 package com.example.popularmovies.task;
 
+import android.content.Context;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ImageView;
 
 import com.example.popularmovies.BuildConfig;
+import com.example.popularmovies.businessobjects.MovieImage;
+import com.squareup.picasso.Picasso;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -14,18 +22,45 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by asimqureshi on 6/14/16.
  */
-public class ListMovieImagesAsyncTask extends AsyncTask<Integer, Void, List<String>> {
+public class ListMovieImagesAsyncTask extends AsyncTask<Integer, Void, MovieImage> {
 
     final String TAG = ListMovieImagesAsyncTask.class.getSimpleName();
 //    https://api.themoviedb.org/3/movie/550/images?api_key=1ecc7763c72271156bf6004d6edc2e1d&language=en&include_image_language=en,null
 
 
     @Override
-    protected List<String> doInBackground(Integer... params) {
+    protected void onPreExecute() {
+        super.onPreExecute();
+    }
+
+    @Override
+    protected void onPostExecute(MovieImage movieImage) {
+        final String imageUrlPath = "http://image.tmdb.org/t/p/w"
+                + movieImage.getWidth()
+                + movieImage.getFilePath()
+                + "?api_key="
+                + BuildConfig.THE_MOVIE_DB_API_KEY
+                + "&language=en&include_image_language=en,null";
+        Log.i(TAG, String.format("imageUrlPath %s", imageUrlPath));
+        Picasso.with(context).load(imageUrlPath).into(imageView);
+    }
+
+    private final ImageView imageView;
+    private final Context context;
+
+    public ListMovieImagesAsyncTask(Context context, ImageView imageView) {
+        super();
+        this.context = context;
+        this.imageView = imageView;
+    }
+
+    @Override
+    protected MovieImage doInBackground(Integer... params) {
         Integer id = params[0];
         // These two need to be declared outside the try/catch
 // so that they can be closed in the finally block.
@@ -34,6 +69,8 @@ public class ListMovieImagesAsyncTask extends AsyncTask<Integer, Void, List<Stri
 
 // Will contain the raw JSON response as a string.
         String moviesJsonString = null;
+        MovieImage movieImage = new MovieImage();
+        String imagePath = "";
 
         try {
             // Construct the URL for the OpenWeatherMap query
@@ -45,7 +82,8 @@ public class ListMovieImagesAsyncTask extends AsyncTask<Integer, Void, List<Stri
                     .appendPath(id.toString())
                     .appendPath("images")
                     .appendQueryParameter("api_key", BuildConfig.THE_MOVIE_DB_API_KEY);
-            URL url = new URL(builder.build().toString());
+            final String urlString = builder.build().toString();
+            URL url = new URL(urlString);
             // Create the request to OpenWeatherMap, and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
@@ -74,11 +112,9 @@ public class ListMovieImagesAsyncTask extends AsyncTask<Integer, Void, List<Stri
                 moviesJsonString = null;
             }
             moviesJsonString = buffer.toString();
-            Log.i(TAG, moviesJsonString);
-        } catch (IOException e) {
+            movieImage = formatJson(moviesJsonString);
+        } catch (Exception e) {
             Log.e(TAG, "Error ", e);
-            // If the code didn't successfully get the weather data, there's no point in attempting
-            // to parse it.
             moviesJsonString = null;
         } finally {
             if (urlConnection != null) {
@@ -92,7 +128,39 @@ public class ListMovieImagesAsyncTask extends AsyncTask<Integer, Void, List<Stri
                 }
             }
         }
-        return new ArrayList<>();
+        return movieImage;
 
+    }
+
+    protected MovieImage formatJson(String json) throws JSONException {
+        // These are the names of the JSON objects that need to be extracted.
+        final String ASPECT_RATIO = "aspect_ratio";
+        final String FILE_PATH = "file_path";
+        final String HEIGHT = "height";
+        final String WIDTH = "width";
+        final String BACKDROPS = "backdrops";
+        final String POSTERS = "posters";
+
+        JSONObject moviePosterJson = new JSONObject(json);
+        JSONArray moviesImageArray = moviePosterJson.getJSONArray(BACKDROPS);
+
+        List<MovieImage> movieImages = new ArrayList<>();
+        for (int i = 0; i < moviesImageArray.length(); i++) {
+            // Get the JSON object representing the day
+            JSONObject moviesImageJSONObject = moviesImageArray.getJSONObject(i);
+            MovieImage movieImage = new MovieImage();
+            movieImage.setAspectRatio(moviesImageJSONObject.getLong(ASPECT_RATIO));
+            movieImage.setFilePath(moviesImageJSONObject.getString(FILE_PATH));
+            movieImage.setHeight(moviesImageJSONObject.getInt(HEIGHT));
+            movieImage.setWidth(moviesImageJSONObject.getInt(WIDTH));
+            Log.i(TAG, String.format("%s", movieImage));
+            movieImages.add(movieImage);
+        }
+        return movieImages.get(random(movieImages.size() - 1));
+    }
+
+    protected int random(int length) {
+        Random rand = new Random();
+        return rand.nextInt(length);
     }
 }

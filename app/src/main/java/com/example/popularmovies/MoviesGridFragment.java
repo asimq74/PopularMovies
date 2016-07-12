@@ -209,8 +209,7 @@ public class MoviesGridFragment extends Fragment implements AbsListView.OnItemCl
             ImageView moviePosterImageView = (ImageView) convertView.findViewById(R.id.movie_poster);
             TextView movieTitleView = (TextView) convertView.findViewById(R.id.movie_title);
             // Populate the data into the template view using the data object
-            http:
-//image.tmdb.org/t/p/w500/8uO0gUM8aNqYLs1OsTBQiXu0fEv.jpg?api_key=1ecc7763c72271156bf6004d6edc2e1d&language=en&include_image_language=en,null
+//            http://image.tmdb.org/t/p/w500/8uO0gUM8aNqYLs1OsTBQiXu0fEv.jpg?api_key=1ecc7763c72271156bf6004d6edc2e1d&language=en&include_image_language=en,null
 
 
             Picasso.with(getActivity()).load("http://image.tmdb.org/t/p/w500/"
@@ -355,13 +354,13 @@ public class MoviesGridFragment extends Fragment implements AbsListView.OnItemCl
                 moviesJsonString = buffer.toString();
                 movieInfos = formatJson(moviesJsonString);
             } catch (JSONException e) {
-                Log.e(TAG, "Error ", e);
+                Log.e(TAG, String.format("JSONException Error e: %s", e.getMessage()), e);
                 // If the code didn't successfully get the weather data, there's no point in attempting
                 // to parse it.
                 moviesJsonString = null;
 
             } catch (IOException e) {
-                Log.e(TAG, "Error ", e);
+                Log.e(TAG, String.format("IOException Error e: %s", e.getMessage()), e);
                 // If the code didn't successfully get the weather data, there's no point in attempting
                 // to parse it.
                 moviesJsonString = null;

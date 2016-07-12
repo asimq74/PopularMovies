@@ -2,8 +2,13 @@ package com.example.popularmovies.businessobjects;
 
 import android.os.Parcel;
 import android.os.Parcelable;
+import android.util.Log;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -102,6 +107,23 @@ public class MovieInfo implements Parcelable {
 
     public String getReleaseDate() {
         return releaseDate;
+    }
+
+    public Calendar getReleaseDateAsCalendar() {
+        DateFormat df = new SimpleDateFormat("yyyy-dd-mm");
+        Calendar cal  = Calendar.getInstance();
+        try {
+            cal.setTime(df.parse(releaseDate));
+        } catch (ParseException e) {
+            Log.e(getClass().getSimpleName(), e.toString(), e);
+        }
+        return cal;
+    }
+
+    public String getReleaseDateLongFormat() {
+        Calendar calendar = getReleaseDateAsCalendar();
+        SimpleDateFormat format = new SimpleDateFormat("MMMM D, yyyy");
+        return format.format(calendar.getTime());
     }
 
     public void setReleaseDate(String releaseDate) {
