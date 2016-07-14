@@ -25,13 +25,21 @@ import java.util.List;
 import java.util.Random;
 
 /**
- * Created by asimqureshi on 6/14/16.
+ * Async Task to list all movie images for a specific movie id.
+ * <p/>
+ * Created by Asim Qureshi.
  */
 public class ListMovieImagesAsyncTask extends AsyncTask<Integer, Void, MovieImage> {
 
     final String TAG = ListMovieImagesAsyncTask.class.getSimpleName();
-//    https://api.themoviedb.org/3/movie/550/images?api_key=1ecc7763c72271156bf6004d6edc2e1d&language=en&include_image_language=en,null
+    private final ImageView imageView;
+    private final Context context;
 
+    public ListMovieImagesAsyncTask(Context context, ImageView imageView) {
+        super();
+        this.context = context;
+        this.imageView = imageView;
+    }
 
     @Override
     protected void onPreExecute() {
@@ -46,34 +54,22 @@ public class ListMovieImagesAsyncTask extends AsyncTask<Integer, Void, MovieImag
                 + "?api_key="
                 + BuildConfig.THE_MOVIE_DB_API_KEY
                 + "&language=en&include_image_language=en,null";
-        Log.i(TAG, String.format("imageUrlPath %s", imageUrlPath));
+        Log.i(TAG, String.format("imageUrlPath=%s", imageUrlPath));
         Picasso.with(context).load(imageUrlPath).into(imageView);
-    }
-
-    private final ImageView imageView;
-    private final Context context;
-
-    public ListMovieImagesAsyncTask(Context context, ImageView imageView) {
-        super();
-        this.context = context;
-        this.imageView = imageView;
     }
 
     @Override
     protected MovieImage doInBackground(Integer... params) {
         Integer id = params[0];
-        // These two need to be declared outside the try/catch
-// so that they can be closed in the finally block.
         HttpURLConnection urlConnection = null;
         BufferedReader reader = null;
 
 // Will contain the raw JSON response as a string.
-        String moviesJsonString = null;
+        String moviesJsonString;
         MovieImage movieImage = new MovieImage();
-        String imagePath = "";
 
         try {
-            // Construct the URL for the OpenWeatherMap query
+            // Construct the URL
             Uri.Builder builder = new Uri.Builder();
             builder.scheme("http")
                     .authority("api.themoviedb.org")
@@ -84,38 +80,26 @@ public class ListMovieImagesAsyncTask extends AsyncTask<Integer, Void, MovieImag
                     .appendQueryParameter("api_key", BuildConfig.THE_MOVIE_DB_API_KEY);
             final String urlString = builder.build().toString();
             URL url = new URL(urlString);
-            // Create the request to OpenWeatherMap, and open the connection
+            // Create the request and open the connection
             urlConnection = (HttpURLConnection) url.openConnection();
             urlConnection.setRequestMethod("GET");
             urlConnection.connect();
 
             // Read the input stream into a String
             InputStream inputStream = urlConnection.getInputStream();
-            StringBuffer buffer = new StringBuffer();
-            if (inputStream == null) {
-                // Nothing to do.
-                moviesJsonString = null;
-            }
+            StringBuilder buffer = new StringBuilder();
             reader = new BufferedReader(new InputStreamReader(inputStream));
 
             String line;
             while ((line = reader.readLine()) != null) {
-                // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
-                // But it does make debugging a *lot* easier if you print out the completed
-                // buffer for debugging.
-                buffer.append(line + "\n");
+                buffer.append(line).append("\n");
             }
 
-            if (buffer.length() == 0) {
-                Log.d(TAG, "Stream was empty");
-                // Stream was empty.  No point in parsing.
-                moviesJsonString = null;
-            }
+            if (buffer.length() == 0) Log.d(TAG, "Stream was empty");
             moviesJsonString = buffer.toString();
             movieImage = formatJson(moviesJsonString);
         } catch (Exception e) {
             Log.e(TAG, "Error ", e);
-            moviesJsonString = null;
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -139,21 +123,18 @@ public class ListMovieImagesAsyncTask extends AsyncTask<Integer, Void, MovieImag
         final String HEIGHT = "height";
         final String WIDTH = "width";
         final String BACKDROPS = "backdrops";
-        final String POSTERS = "posters";
 
         JSONObject moviePosterJson = new JSONObject(json);
         JSONArray moviesImageArray = moviePosterJson.getJSONArray(BACKDROPS);
 
         List<MovieImage> movieImages = new ArrayList<>();
         for (int i = 0; i < moviesImageArray.length(); i++) {
-            // Get the JSON object representing the day
             JSONObject moviesImageJSONObject = moviesImageArray.getJSONObject(i);
             MovieImage movieImage = new MovieImage();
             movieImage.setAspectRatio(moviesImageJSONObject.getLong(ASPECT_RATIO));
             movieImage.setFilePath(moviesImageJSONObject.getString(FILE_PATH));
             movieImage.setHeight(moviesImageJSONObject.getInt(HEIGHT));
             movieImage.setWidth(moviesImageJSONObject.getInt(WIDTH));
-            Log.i(TAG, String.format("%s", movieImage));
             movieImages.add(movieImage);
         }
         return movieImages.get(random(movieImages.size() - 1));

@@ -3,7 +3,6 @@ package com.example.popularmovies;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,18 +15,18 @@ import com.example.popularmovies.task.ListMovieImagesAsyncTask;
 import com.squareup.picasso.Picasso;
 
 /**
- * A placeholder fragment containing a simple view.
+ * Placeholder fragment displaying Popular Movies Detail
+ * <p/>
+ * Created by Asim Qureshi.
  */
 public class MovieDetailActivityFragment extends Fragment implements MovieConstants {
-
-    private static final String LOG_TAG = MovieDetailActivityFragment.class.getSimpleName();
 
     private MovieInfo movieInfo;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-       View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_movie_detail, container, false);
 
         // The detail Activity called via intent.  Inspect the intent for forecast data.
         Intent intent = getActivity().getIntent();
@@ -41,7 +40,6 @@ public class MovieDetailActivityFragment extends Fragment implements MovieConsta
     @Override
     public void onStart() {
         super.onStart();
-        Log.i(TAG, "onStart");
         final ImageView moviePosterView = (ImageView) getView().findViewById(R.id.movie_poster);
         ListMovieImagesAsyncTask listMoviesTask = new ListMovieImagesAsyncTask(getActivity(), moviePosterView);
         listMoviesTask.execute(movieInfo.getId());
@@ -59,8 +57,6 @@ public class MovieDetailActivityFragment extends Fragment implements MovieConsta
         ratingView.setText(movieInfo.getVoteAverage());
         final TextView releaseDateView = (TextView) getView().findViewById(R.id.release_date);
         releaseDateView.setText(movieInfo.getReleaseDateLongFormat());
-        Log.i(TAG, "release date as calendar: " + movieInfo.getReleaseDateAsCalendar());
     }
 
-    final String TAG = this.getClass().getSimpleName();
 }

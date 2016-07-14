@@ -1,19 +1,17 @@
 package com.example.popularmovies;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity implements MoviesGridFragment.OnFragmentInteractionListener{
-    @Override
-    public void onFragmentInteraction(String id) {
-        Toast.makeText(this,id,
-                Toast.LENGTH_SHORT).show();
-    }
-
-
+/**
+ * Main Activity for Popular Movies
+ * <p/>
+ * Created by Asim Qureshi.
+ */
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,11 +19,10 @@ public class MainActivity extends AppCompatActivity implements MoviesGridFragmen
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                   .add(R.id.container, MoviesGridFragment.newInstance("movie", "movie desc"))
+                    .add(R.id.container, MoviesGridFragment.newInstance())
                     .commit();
         }
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -41,11 +38,13 @@ public class MainActivity extends AppCompatActivity implements MoviesGridFragmen
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+            startActivity(settingsIntent);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
 }

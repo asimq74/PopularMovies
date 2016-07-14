@@ -12,7 +12,9 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * Created by asimqureshi on 6/5/16.
+ * Movie Information Business Object
+ * <p/>
+ * Created by Asim Qureshi.
  */
 public class MovieInfo implements Parcelable {
     private String posterPath = "";
@@ -38,7 +40,6 @@ public class MovieInfo implements Parcelable {
             movieInfo.adult = in.readString();
             movieInfo.overview = in.readString();
             movieInfo.releaseDate = in.readString();
-//            in.readList(movieInfo.genreIds, Integer.class.getClassLoader());
             movieInfo.genreIds = in.readArrayList(Integer.class.getClassLoader());
             movieInfo.id = in.readInt();
             movieInfo.originalTitle = in.readString();
@@ -109,9 +110,13 @@ public class MovieInfo implements Parcelable {
         return releaseDate;
     }
 
+    public void setReleaseDate(String releaseDate) {
+        this.releaseDate = releaseDate;
+    }
+
     public Calendar getReleaseDateAsCalendar() {
         DateFormat df = new SimpleDateFormat("yyyy-dd-mm");
-        Calendar cal  = Calendar.getInstance();
+        Calendar cal = Calendar.getInstance();
         try {
             cal.setTime(df.parse(releaseDate));
         } catch (ParseException e) {
@@ -124,10 +129,6 @@ public class MovieInfo implements Parcelable {
         Calendar calendar = getReleaseDateAsCalendar();
         SimpleDateFormat format = new SimpleDateFormat("MMMM D, yyyy");
         return format.format(calendar.getTime());
-    }
-
-    public void setReleaseDate(String releaseDate) {
-        this.releaseDate = releaseDate;
     }
 
     public List<Integer> getGenreIds() {

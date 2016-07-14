@@ -4,7 +4,9 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by asimqureshi on 6/28/16.
+ * Movie Image Business Object
+ * <p/>
+ * Created by Asim Qureshi.
  */
 public class MovieImage implements Parcelable {
 

@@ -6,6 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+/**
+ * Main Activity displaying Popular Movies Detail
+ * <p/>
+ * Created by Asim Qureshi.
+ */
 public class MovieDetailActivity extends AppCompatActivity {
 
     @Override

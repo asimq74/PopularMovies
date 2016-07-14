@@ -1,8 +1,10 @@
 package com.example.popularmovies.businessobjects;
 
 /**
- * Created by asimqureshi on 5/30/16.
+ * Contains constant values for movies
+ * <p/>
+ * Created by Asim Qureshi.
  */
 public interface MovieConstants {
-    final String MOVIE_INFO_PARCELABLE_KEY = "MOVIE_INFO_PARCELABLE_KEY";
+    String MOVIE_INFO_PARCELABLE_KEY = "MOVIE_INFO_PARCELABLE_KEY";
 }
